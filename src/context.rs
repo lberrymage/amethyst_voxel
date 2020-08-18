@@ -58,17 +58,12 @@ impl<'a, T: Voxel> Context<T> for VoxelContext<'a, T> {
     }
 
     fn render(&self, x: isize, y: isize, z: isize) -> bool {
-        if x >= 0
+        !(x >= 0
             && x < T::WIDTH as isize
             && y >= 0
             && y < T::WIDTH as isize
             && z >= 0
-            && z < T::WIDTH as isize
-        {
-            false
-        } else {
-            true
-        }
+            && z < T::WIDTH as isize)
     }
 
     fn skin(&self, x: isize, y: isize, z: isize) -> Option<u8> {
