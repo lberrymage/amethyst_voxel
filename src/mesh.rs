@@ -360,5 +360,5 @@ where
         tri.append(voxel, &shared, context, vec3(0.0, 0.0, 0.0), 1.0, transform);
     }
 
-    tri.to_mesh(atlas, queue, factory)
+    tri.into_mesh(atlas, queue, factory)
 }

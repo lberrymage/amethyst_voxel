@@ -78,7 +78,7 @@ impl Triangulation {
     }
 
     /// Transform into a rendy Mesh
-    pub fn to_mesh<A, B>(self, atlas: &A, queue: QueueId, factory: &Factory<B>) -> Option<Mesh>
+    pub fn into_mesh<A, B>(self, atlas: &A, queue: QueueId, factory: &Factory<B>) -> Option<Mesh>
     where
         A: AtlasAccess,
         B: Backend,
