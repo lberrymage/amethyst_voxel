@@ -21,7 +21,7 @@ pub trait Context<T: Voxel> {
     fn skin(&self, x: isize, y: isize, z: isize) -> Option<u8>;
 
     /// Returns a Context for the child at the relative coordinate
-    fn child<'a>(&'a self, x: isize, y: isize, z: isize) -> DetailContext<'a, T>;
+    fn child(&self, x: isize, y: isize, z: isize) -> DetailContext<T>;
 }
 
 /// Context sampling no neighbours at all.
@@ -85,7 +85,7 @@ impl<'a, T: Voxel> Context<T> for VoxelContext<'a, T> {
         }
     }
 
-    fn child<'b>(&'b self, x: isize, y: isize, z: isize) -> DetailContext<'b, T> {
+    fn child(&self, x: isize, y: isize, z: isize) -> DetailContext<T> {
         if x >= 0
             && x < T::WIDTH as isize
             && y >= 0
@@ -227,7 +227,7 @@ where
         self.find(x, y, z).and_then(|v| v.skin())
     }
 
-    fn child<'b>(&'b self, x: isize, y: isize, z: isize) -> DetailContext<'b, NestedVoxel<V>> {
+    fn child(&self, x: isize, y: isize, z: isize) -> DetailContext<NestedVoxel<V>> {
         DetailContext::new(self, [x, y, z], self.find(x, y, z))
     }
 }
