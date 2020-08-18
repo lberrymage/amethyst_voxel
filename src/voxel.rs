@@ -66,7 +66,7 @@ pub trait Voxel: 'static + Clone + Send + Sync {
     fn is_detail(&self) -> bool;
 
     /// Triangulate the voxel on a specific side
-    fn triangulate<'a, S: Side, C: Context<Self>>(
+    fn triangulate<S: Side, C: Context<Self>>(
         &self,
         mesh: &mut Triangulation,
         ao: &SharedVertexData,

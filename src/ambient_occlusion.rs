@@ -27,7 +27,7 @@ pub struct SharedVertex {
 }
 
 impl SharedVertexData<'_> {
-    pub fn build<'a, T: Voxel, C: Context<T>>(root: &T, neighbours: &C) -> Self {
+    pub fn build<T: Voxel, C: Context<T>>(root: &T, neighbours: &C) -> Self {
         let w = T::AO_WIDTH as isize;
         if root.is_detail() {
             let bound = |x| x < 0 || x > T::LAST as isize;

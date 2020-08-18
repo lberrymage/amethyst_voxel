@@ -50,7 +50,7 @@ impl Triangulation {
     }
 
     /// Create a new mesh
-    pub fn append<'a, T: Voxel, C: Context<T>>(
+    pub fn append<T: Voxel, C: Context<T>>(
         &mut self,
         root: &T,
         ao: &SharedVertexData,
