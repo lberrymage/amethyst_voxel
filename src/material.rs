@@ -14,7 +14,7 @@ use amethyst::{
 };
 use core::num::NonZeroU8;
 use serde_derive::*;
-use std::{borrow::Cow, collections::HashMap, iter::repeat, ops::Deref, sync::Arc};
+use std::{borrow::Cow, collections::HashMap, iter::repeat, sync::Arc};
 
 /// A material. For a better explanation of the properties,
 /// take a look at the amethyst PBR model.
@@ -408,7 +408,7 @@ impl<'a> System<'a> for AtlasProcessor {
             },
             data.time.frame_number(),
             &**data.pool,
-            data.strategy.as_ref().map(Deref::deref),
+            data.strategy.as_deref(),
         );
     }
 

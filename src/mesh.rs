@@ -251,7 +251,7 @@ impl<'a, B: Backend, V: Data + Default> System<'a> for VoxelMeshProcessor<B, V> 
             },
             data.time.frame_number(),
             &**data.pool,
-            data.strategy.as_ref().map(Deref::deref),
+            data.strategy.as_deref(),
         );
 
         data.mesh_storage.process(
@@ -292,7 +292,7 @@ impl<'a, B: Backend, V: Data + Default> System<'a> for VoxelMeshProcessor<B, V> 
             },
             data.time.frame_number(),
             &**data.pool,
-            data.strategy.as_ref().map(Deref::deref),
+            data.strategy.as_deref(),
         );
     }
 }
