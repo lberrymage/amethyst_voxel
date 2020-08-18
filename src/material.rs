@@ -420,7 +420,7 @@ impl<'a> System<'a> for AtlasProcessor {
 fn build_material(
     size: usize,
     grid: usize,
-    materials: &Vec<Box<dyn VoxelMaterial>>,
+    materials: &[Box<dyn VoxelMaterial>],
     loader: &Loader,
     texture_storage: &AssetStorage<Texture>,
     material_storage: &AssetStorage<Material>,
