@@ -113,8 +113,8 @@ impl<'a, 'b, V: Data> Raycast for VoxelWorldAccess<'a, 'b, V> {
         // the current location being checked on the ray
         let current = ray.origin * (1.0 / self.world.scale) - origin;
         cast(self, ray, current, ray.direction, 30).map(|mut intersection| {
-            intersection.position = intersection.position + origin;
-            intersection.position = intersection.position * self.world.scale;
+            intersection.position += origin;
+            intersection.position *= self.world.scale;
             intersection
         })
     }
