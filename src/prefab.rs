@@ -74,6 +74,7 @@ impl<'a> PrefabData<'a> for VoxelMeshPrefab {
 }
 
 impl<'a, V: Data> PrefabData<'a> for DynamicVoxelMeshPrefab<V> {
+    #[allow(clippy::type_complexity)]
     type SystemData = (
         ReadExpect<'a, Loader>,
         Read<'a, AssetStorage<DynamicVoxelMeshData<V>>>,
