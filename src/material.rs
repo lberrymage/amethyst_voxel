@@ -175,28 +175,25 @@ impl AtlasData {
         id: S,
         material: T,
     ) -> AtlasMaterialHandle {
-        self.lookup
-            .entry(id.into())
-            .or_insert_with({
-                let materials = &mut self.materials;
-                let grid = &mut self.grid;
-                let size = &mut self.size;
-                move || {
-                    let material = material.as_ref();
-                    let id = materials.len();
-                    materials.extend(material.submaterials().into_iter());
-                    *grid = (*grid).max(material.dimension() * 2);
-                    *size = {
-                        let mut size = 32;
-                        while materials.len() * (*grid) * (*grid) > size * size {
-                            size *= 2;
-                        }
-                        size
-                    };
-                    AtlasMaterialHandle(id as u32)
-                }
-            })
-            .clone()
+        *self.lookup.entry(id.into()).or_insert_with({
+            let materials = &mut self.materials;
+            let grid = &mut self.grid;
+            let size = &mut self.size;
+            move || {
+                let material = material.as_ref();
+                let id = materials.len();
+                materials.extend(material.submaterials().into_iter());
+                *grid = (*grid).max(material.dimension() * 2);
+                *size = {
+                    let mut size = 32;
+                    while materials.len() * (*grid) * (*grid) > size * size {
+                        size *= 2;
+                    }
+                    size
+                };
+                AtlasMaterialHandle(id as u32)
+            }
+        })
     }
 
     /// Create a material without assigning an id to it. This means the material
@@ -320,24 +317,21 @@ impl VoxelMaterial for TexturedMaterial {
     }
 
     fn albedo_alpha(&self, x: usize, y: usize) -> [u8; 4] {
-        self.albedo_alpha
+        *self
+            .albedo_alpha
             .get(y * self.size + x)
             .unwrap_or(&[255, 0, 255, 255])
-            .clone()
     }
 
     fn emission(&self, x: usize, y: usize) -> [u8; 3] {
-        self.emission
-            .get(y * self.size + x)
-            .unwrap_or(&[0, 0, 0])
-            .clone()
+        *self.emission.get(y * self.size + x).unwrap_or(&[0, 0, 0])
     }
 
     fn metallic_roughness(&self, x: usize, y: usize) -> [u8; 2] {
-        self.metallic_roughness
+        *self
+            .metallic_roughness
             .get(y * self.size + x)
             .unwrap_or(&[240, 8])
-            .clone()
     }
 }
 

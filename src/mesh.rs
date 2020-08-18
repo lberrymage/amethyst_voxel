@@ -310,12 +310,9 @@ fn build_voxel<V: Data>(
         .map(|instance| {
             (
                 instance.index,
-                materials_map
-                    .entry(instance.material)
-                    .or_insert_with(|| {
-                        atlas.create_without_id(model.materials[instance.material].clone())
-                    })
-                    .clone(),
+                *materials_map.entry(instance.material).or_insert_with(|| {
+                    atlas.create_without_id(model.materials[instance.material].clone())
+                }),
             )
         })
         .collect::<Vec<(usize, AtlasMaterialHandle)>>();
