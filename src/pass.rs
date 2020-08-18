@@ -1,26 +1,30 @@
-use amethyst::assets::{AssetStorage, Handle};
-use amethyst::renderer::{
-    batch::{GroupIterator, TwoLevelBatch},
-    pass::Base3DPassDef,
-    pipeline::{PipelineDescBuilder, PipelinesBuilder},
-    pod::{SkinnedVertexArgs, VertexArgs},
-    rendy::{
-        command::{QueueId, RenderPassEncoder},
-        factory::Factory,
-        graph::{
-            render::{PrepareResult, RenderGroup, RenderGroupDesc},
-            GraphContext, NodeBuffer, NodeImage,
+use amethyst::{
+    assets::{AssetStorage, Handle},
+    renderer::{
+        batch::{GroupIterator, TwoLevelBatch},
+        pass::Base3DPassDef,
+        pipeline::{PipelineDescBuilder, PipelinesBuilder},
+        pod::{SkinnedVertexArgs, VertexArgs},
+        rendy::{
+            command::{QueueId, RenderPassEncoder},
+            factory::Factory,
+            graph::{
+                render::{PrepareResult, RenderGroup, RenderGroupDesc},
+                GraphContext,
+                NodeBuffer,
+                NodeImage,
+            },
+            hal::{self, device::Device, format::Format, pso},
+            mesh::{AsAttribute, AsVertex, VertexFormat},
+            shader::{Shader, SpirvShader},
+            util::types::vertex::{Normal, Position, Tangent},
         },
-        hal::{self, device::Device, format::Format, pso},
-        mesh::{AsAttribute, AsVertex, VertexFormat},
-        shader::{Shader, SpirvShader},
-        util::types::vertex::{Normal, Position, Tangent},
+        resources::Tint,
+        skinning::{JointCombined, JointTransforms},
+        submodules::{DynamicVertexBuffer, EnvironmentSub, MaterialId, MaterialSub, SkinningSub},
+        types::Backend,
+        util,
     },
-    resources::Tint,
-    skinning::{JointCombined, JointTransforms},
-    submodules::{DynamicVertexBuffer, EnvironmentSub, MaterialId, MaterialSub, SkinningSub},
-    types::Backend,
-    util,
 };
 
 use crate::{material::*, mesh::*};
@@ -198,7 +202,7 @@ where
         world: &World,
     ) -> PrepareResult {
         let (
-            //visibility,
+            // visibility,
             mesh_storage,
             atlas_storage,
             meshes,
@@ -465,7 +469,7 @@ fn build_pipelines<B: Backend, T: Base3DPassDef>(
                 factory.device().destroy_pipeline_layout(pipeline_layout);
             }
             Err(e)
-        }
+        },
         Ok(pipelines) => Ok((pipelines, pipeline_layout)),
     }
 }

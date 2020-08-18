@@ -1,8 +1,14 @@
 pub use crate::{
     bundle::VoxelBundle,
     material::{
-        Atlas, AtlasAccess, AtlasData, AtlasMaterialHandle, ColoredMaterial, TexturedMaterial,
-        Tiling, VoxelMaterial,
+        Atlas,
+        AtlasAccess,
+        AtlasData,
+        AtlasMaterialHandle,
+        ColoredMaterial,
+        TexturedMaterial,
+        Tiling,
+        VoxelMaterial,
     },
     mesh::{DynamicVoxelMesh, VoxelMesh},
     prefab::{DynamicVoxelMeshPrefab, VoxelMeshPrefab},

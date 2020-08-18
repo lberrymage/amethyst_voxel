@@ -1,11 +1,14 @@
 use nalgebra_glm::*;
 use std::ops::{Deref, DerefMut};
 
-use crate::voxel::{Data, NestedVoxel, Voxel};
-use crate::world::VoxelWorldAccess;
+use crate::{
+    voxel::{Data, NestedVoxel, Voxel},
+    world::VoxelWorldAccess,
+};
 
-/// A ray that can be used to perform raycasting on a specific type that implements `Raycast`.
-/// The ray is not compatible with other `Raycast` implementations.
+/// A ray that can be used to perform raycasting on a specific type that
+/// implements `Raycast`. The ray is not compatible with other `Raycast`
+/// implementations.
 pub struct Ray {
     origin: Vec3,
     direction: Vec3,
@@ -15,8 +18,9 @@ pub struct Ray {
 
 /// The result from performing a raycast
 pub struct Intersection {
-    /// The inner result. If the voxel that this intersection hit has subvoxels, the
-    ///  inner intersection contains the intersection with that subvoxel.
+    /// The inner result. If the voxel that this intersection hit has subvoxels,
+    /// the  inner intersection contains the intersection with that
+    /// subvoxel.
     pub inner: Option<Box<Intersection>>,
     /// The index of the subvoxel that this intersection intersects with.
     pub index: usize,
@@ -36,7 +40,8 @@ pub trait RaycastBase: Raycast {
 pub trait Raycast {
     type Child: Raycast;
 
-    /// Cast a `Ray` on self, returning a ray that can be casted on the child type.
+    /// Cast a `Ray` on self, returning a ray that can be casted on the child
+    /// type.
     fn cast(&self, ray: &Ray) -> Option<Intersection>;
 
     fn check(
@@ -190,8 +195,8 @@ impl<T: Voxel> Raycast for T {
         let current = transform * vec4(ray.origin[0], ray.origin[1], ray.origin[2], 1.0);
         let mut current = vec4_to_vec3(&current) * scale;
 
-        // move the origin of the ray to the start of the box, but only if we're not inside the
-        //  box already.
+        // move the origin of the ray to the start of the box, but only if we're not
+        // inside the  box already.
         for i in 0..3 {
             let t = if current_direction[i] > 0.0 {
                 (0.0 - current[i]) / current_direction[i]
@@ -205,14 +210,7 @@ impl<T: Voxel> Raycast for T {
             }
         }
 
-        cast(
-            self,
-            ray,
-            current,
-            current_direction,
-            6 * T::WIDTH,
-        )
-        .map(|mut intersection| {
+        cast(self, ray, current, current_direction, 6 * T::WIDTH).map(|mut intersection| {
             let mut pos = vec3_to_vec4(&intersection.position) / scale;
             pos.w = 1.0;
             pos = ray.transform * pos;
@@ -231,9 +229,7 @@ impl<T: Voxel> Raycast for T {
         if (0..3).fold(true, |b, i| {
             b && coord[i] >= 0 && coord[i] < T::WIDTH as isize
         }) {
-            let i = coord[0] as usize
-                + coord[1] as usize * T::DY
-                + coord[2] as usize * T::DZ;
+            let i = coord[0] as usize + coord[1] as usize * T::DY + coord[2] as usize * T::DZ;
             if let Some(voxel) = self.get(i) {
                 if voxel.visible() {
                     if voxel.is_detail() {
@@ -277,7 +273,10 @@ impl<T: Voxel> Raycast for T {
         self.get(intersection.index)
     }
 
-    fn get_hit_mut(&mut self, intersection: &Intersection) -> Option<&mut <T::Data as Data>::Child> {
+    fn get_hit_mut(
+        &mut self,
+        intersection: &Intersection,
+    ) -> Option<&mut <T::Data as Data>::Child> {
         self.get_mut(intersection.index)
     }
 }
@@ -292,8 +291,8 @@ fn cast<R: Raycast>(
     direction: Vec3,
     iterations: usize,
 ) -> Option<Intersection> {
-    // keep the current location as integer coordinates, to mitigate rounding errors on
-    //  integrated values
+    // keep the current location as integer coordinates, to mitigate rounding errors
+    // on  integrated values
     let mut current_i = [
         current[0].floor() as isize,
         current[1].floor() as isize,
@@ -351,7 +350,8 @@ fn cast<R: Raycast>(
     None
 }
 
-/// find nearest intersection with a 1d grid, with grid lines at all integer positions
+/// find nearest intersection with a 1d grid, with grid lines at all integer
+/// positions
 fn intersect(reference: isize, position: f32, direction: f32) -> f32 {
     if direction == 0.0 {
         ::std::f32::INFINITY

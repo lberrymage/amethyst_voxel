@@ -1,5 +1,9 @@
-use crate::material::AtlasProcessor;
-use crate::{mesh::*, voxel::Data, world::VoxelSource, world::VoxelWorld};
+use crate::{
+    material::AtlasProcessor,
+    mesh::*,
+    voxel::Data,
+    world::{VoxelSource, VoxelWorld},
+};
 use amethyst::{
     core::bundle::SystemBundle,
     ecs::prelude::{Component, DispatcherBuilder, WorldExt},
@@ -14,7 +18,8 @@ type SystemRegistrator = dyn for<'a, 'b> FnOnce(&mut World, &mut DispatcherBuild
 
 /// Main bundle for supporting voxels in your amethyst project.
 /// Before any `Voxel<T>` type will work,
-///  you have to specify which `Data` and `Source` implementations you plan to use.
+///  you have to specify which `Data` and `Source` implementations you plan to
+/// use.
 pub struct VoxelBundle {
     triangulation_limit: usize,
     systems: Vec<Box<SystemRegistrator>>,

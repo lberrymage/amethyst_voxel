@@ -1,4 +1,4 @@
-use crate::voxel::{Voxel};
+use crate::voxel::Voxel;
 use nalgebra_glm::{Mat3, Vec3};
 
 pub trait Side {
@@ -22,8 +22,8 @@ impl Side for Left {
     const DY: isize = 0;
     const DZ: isize = 0;
 
-    fn offset<T: Voxel>() -> isize { 
-        T::DX as isize 
+    fn offset<T: Voxel>() -> isize {
+        T::DX as isize
     }
 
     fn accept<T: Voxel>(x: usize, _: usize, _: usize) -> bool {

@@ -1,15 +1,16 @@
-use crate::ambient_occlusion::*;
-use crate::context::Context;
-use crate::material::{AtlasAccess, AtlasMaterialHandle};
-use crate::pass::Surface;
-use crate::side::*;
-use crate::voxel::*;
+use crate::{
+    ambient_occlusion::*,
+    context::Context,
+    material::{AtlasAccess, AtlasMaterialHandle},
+    pass::Surface,
+    side::*,
+    voxel::*,
+};
 use amethyst::renderer::{
     rendy::{
         command::QueueId,
         factory::Factory,
-        mesh::MeshBuilder,
-        mesh::{Normal, Position, Tangent},
+        mesh::{MeshBuilder, Normal, Position, Tangent},
     },
     skinning::{JointCombined, JointIds, JointWeights},
     types::{Backend, Mesh},
@@ -187,17 +188,18 @@ pub fn triangulate_face<S: Side>(
         .extend(repeat(Tangent(convert4(tangent))).take(4));
     triangulation
         .tex
-        .extend(shared.iter().enumerate().map(|(i, shared)| Texturing {
-            material_id: material.0,
-            side: S::SIDE as u8,
-            coord: i as u8,
-            ao: shared.occlusion,
+        .extend(shared.iter().enumerate().map(|(i, shared)| {
+            Texturing {
+                material_id: material.0,
+                side: S::SIDE as u8,
+                coord: i as u8,
+                ao: shared.occlusion,
+            }
         }));
 
     if triangulation.skinned {
-        triangulation
-            .jnt
-            .extend(shared.iter().map(|shared| JointCombined {
+        triangulation.jnt.extend(shared.iter().map(|shared| {
+            JointCombined {
                 joint_ids: JointIds([
                     shared.skins[0].0 as u16,
                     shared.skins[1].0 as u16,
@@ -210,7 +212,8 @@ pub fn triangulate_face<S: Side>(
                     shared.skins[2].1 as f32 / 255.0,
                     shared.skins[3].1 as f32 / 255.0,
                 ]),
-            }));
+            }
+        }));
     }
 
     if shared[0].occlusion + shared[2].occlusion > shared[1].occlusion + shared[3].occlusion {

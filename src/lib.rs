@@ -2,7 +2,7 @@
 //!
 //! A voxel toolbox for the amethyst game engine.
 //!
-//! Todo introduction
+//! Placeholder introduction
 
 #[macro_use]
 extern crate derivative;

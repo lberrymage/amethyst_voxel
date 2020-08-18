@@ -1,14 +1,18 @@
-use std::iter::FromIterator;
-use std::ops::{Deref, DerefMut};
-use std::sync::Arc;
+use std::{
+    iter::FromIterator,
+    ops::{Deref, DerefMut},
+    sync::Arc,
+};
 
 use nalgebra_glm::Vec3;
 
-use crate::ambient_occlusion::SharedVertexData;
-use crate::context::Context;
-use crate::material::AtlasMaterialHandle;
-use crate::side::Side;
-use crate::triangulate::Triangulation;
+use crate::{
+    ambient_occlusion::SharedVertexData,
+    context::Context,
+    material::AtlasMaterialHandle,
+    side::Side,
+    triangulate::Triangulation,
+};
 
 pub trait Voxel: 'static + Clone + Send + Sync {
     type Data: Data;
@@ -38,7 +42,8 @@ pub trait Voxel: 'static + Clone + Send + Sync {
     /// Construct a new, empty voxel.
     fn new_empty(data: Self::Data) -> Self;
 
-    /// Construct a new, filled voxel. The voxel will be filled with one single material.
+    /// Construct a new, filled voxel. The voxel will be filled with one single
+    /// material.
     fn new_filled(data: Self::Data, material: AtlasMaterialHandle) -> Self;
 
     /// Retrieve a reference to subvoxel at index.
@@ -50,7 +55,8 @@ pub trait Voxel: 'static + Clone + Send + Sync {
     /// Returns whether this voxel is visible, i.e. if it has geometry.
     fn visible(&self) -> bool;
 
-    /// Returns whether the neighbours of this voxel are visible if the camera was inside this voxel.
+    /// Returns whether the neighbours of this voxel are visible if the camera
+    /// was inside this voxel.
     fn render(&self) -> bool;
 
     /// Returns the skin binding for this voxel
@@ -73,7 +79,8 @@ pub trait Voxel: 'static + Clone + Send + Sync {
 /// Trait for user data associated with voxels.
 pub trait Data: 'static + Default + Clone + Send + Sync {
     /// The amount of subdivisions to do in order to create child voxels.
-    /// A value of 4 means that 2^4=16 subvoxels would be created at every axis, for a total of 16^3=4096 subvoxels.
+    /// A value of 4 means that 2^4=16 subvoxels would be created at every axis,
+    /// for a total of 16^3=4096 subvoxels.
     const SUBDIV: usize;
 
     type Child: Voxel;
@@ -83,7 +90,8 @@ pub trait Data: 'static + Default + Clone + Send + Sync {
         true
     }
 
-    /// Returns whether the neighbours of this voxel are visible if the camera was inside this voxel.
+    /// Returns whether the neighbours of this voxel are visible if the camera
+    /// was inside this voxel.
     fn render(&self) -> bool {
         false
     }
@@ -106,10 +114,11 @@ pub enum NestedVoxel<T: Data> {
         data: T,
     },
 
-    /// A detail voxel. This voxel contains a number of subvoxels determined by `T::subdivisions()`.
+    /// A detail voxel. This voxel contains a number of subvoxels determined by
+    /// `T::subdivisions()`.
     Detail {
-        /// A shared array of subvoxels. The array is shared so that templated detail voxels can be
-        /// represented cheaply.
+        /// A shared array of subvoxels. The array is shared so that templated
+        /// detail voxels can be represented cheaply.
         detail: Arc<Vec<T::Child>>,
 
         /// User data for the voxel.
@@ -147,7 +156,9 @@ impl Voxel for SimpleVoxel {
     }
 
     fn new_filled(_: (), material: AtlasMaterialHandle) -> Self {
-        Self { material: Some(material) }
+        Self {
+            material: Some(material),
+        }
     }
 
     fn get(&self, _: usize) -> Option<&ChildOf<Self>> {
@@ -252,8 +263,7 @@ impl<T: Data> Voxel for NestedVoxel<T> {
     fn skin(&self) -> Option<u8> {
         match *self {
             Self::Empty { .. } => None,
-            Self::Detail { ref data, .. } |
-            Self::Material { ref data, .. } => data.skin(),
+            Self::Detail { ref data, .. } | Self::Material { ref data, .. } => data.skin(),
             Self::Placeholder => None,
         }
     }
@@ -278,18 +288,20 @@ impl<T: Data> Voxel for NestedVoxel<T> {
         match *self {
             Self::Empty { .. } => (),
 
-            Self::Detail { ref detail, .. } => triangulate_detail::<S, _, _>(
-                mesh,
-                shared,
-                context,
-                origin,
-                scale,
-                detail.as_slice(),
-            ),
+            Self::Detail { ref detail, .. } => {
+                triangulate_detail::<S, _, _>(
+                    mesh,
+                    shared,
+                    context,
+                    origin,
+                    scale,
+                    detail.as_slice(),
+                )
+            },
 
             Self::Material { material, .. } => {
                 triangulate_face::<S>(mesh, shared, origin, scale, material)
-            }
+            },
 
             Self::Placeholder => (),
         }

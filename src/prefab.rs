@@ -1,11 +1,15 @@
-use amethyst::assets::{AssetStorage, Handle, Loader, PrefabData, Progress, ProgressCounter};
-use amethyst::ecs::*;
-use amethyst::error::*;
+use amethyst::{
+    assets::{AssetStorage, Handle, Loader, PrefabData, Progress, ProgressCounter},
+    ecs::*,
+    error::*,
+};
 use serde::Deserialize;
 
-use crate::mesh::{DynamicVoxelMesh, DynamicVoxelMeshData, VoxelMesh};
-use crate::vox::VoxFormat;
-use crate::voxel::Data;
+use crate::{
+    mesh::{DynamicVoxelMesh, DynamicVoxelMeshData, VoxelMesh},
+    vox::VoxFormat,
+    voxel::Data,
+};
 
 #[derive(Clone, Deserialize)]
 pub enum VoxelMeshPrefab {
@@ -47,7 +51,7 @@ impl<'a> PrefabData<'a> for VoxelMeshPrefab {
         match self {
             VoxelMeshPrefab::Handle(handle) => {
                 handles.insert(entity, handle.clone())?;
-            }
+            },
             _ => unreachable!(),
         }
         Ok(())
@@ -63,7 +67,7 @@ impl<'a> PrefabData<'a> for VoxelMeshPrefab {
                 progress.add_assets(1);
                 *self = VoxelMeshPrefab::Handle(loader.load(file, VoxFormat, progress, storage));
                 Ok(true)
-            }
+            },
             _ => Ok(false),
         }
     }
@@ -91,7 +95,7 @@ impl<'a, V: Data> PrefabData<'a> for DynamicVoxelMeshPrefab<V> {
                     entity,
                     DynamicVoxelMesh::new(voxel.data.clone(), voxel.atlas.clone()),
                 )?;
-            }
+            },
             _ => unreachable!(),
         }
         Ok(())
@@ -108,7 +112,7 @@ impl<'a, V: Data> PrefabData<'a> for DynamicVoxelMeshPrefab<V> {
                 *self =
                     DynamicVoxelMeshPrefab::Handle(loader.load(file, VoxFormat, progress, storage));
                 Ok(true)
-            }
+            },
             _ => Ok(false),
         }
     }

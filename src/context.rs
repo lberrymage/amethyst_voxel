@@ -1,27 +1,27 @@
-use crate::mesh::DynamicVoxelMesh;
-use crate::voxel::{Data, NestedVoxel, Voxel, ChildOf};
-use crate::world::VoxelWorld;
+use crate::{
+    mesh::DynamicVoxelMesh,
+    voxel::{ChildOf, Data, NestedVoxel, Voxel},
+    world::VoxelWorld,
+};
 
 use amethyst::core::ecs::storage::GenericReadStorage;
 
 /// Trait for retrieving neighbour information between separate root voxels.
 pub trait Context<T: Voxel> {
-    /// Same as `Voxel::visible`, but accepts a relative coordinate for selecting a child voxel.
+    /// Same as `Voxel::visible`, but accepts a relative coordinate for
+    /// selecting a child voxel.
     fn visible(&self, x: isize, y: isize, z: isize) -> bool;
 
-    /// Same as `Voxel::render`, but accepts a relative coordinate for selecting a child voxel.
+    /// Same as `Voxel::render`, but accepts a relative coordinate for selecting
+    /// a child voxel.
     fn render(&self, x: isize, y: isize, z: isize) -> bool;
 
-    /// Same as `Voxel::skin`, but accepts a relative coordinate for selecting a child voxel.
+    /// Same as `Voxel::skin`, but accepts a relative coordinate for selecting a
+    /// child voxel.
     fn skin(&self, x: isize, y: isize, z: isize) -> Option<u8>;
 
     /// Returns a Context for the child at the relative coordinate
-    fn child<'a>(
-        &'a self,
-        x: isize,
-        y: isize,
-        z: isize,
-    ) -> DetailContext<'a, T>;
+    fn child<'a>(&'a self, x: isize, y: isize, z: isize) -> DetailContext<'a, T>;
 }
 
 /// Context sampling no neighbours at all.
@@ -30,7 +30,8 @@ pub struct VoxelContext<'a, T: Voxel> {
     voxel: &'a T,
 }
 
-/// Context sampling the inner details of a voxel. Neighbours resolve through the parent Context.
+/// Context sampling the inner details of a voxel. Neighbours resolve through
+/// the parent Context.
 #[derive(Clone)]
 pub struct DetailContext<'a, P: Voxel> {
     parent: &'a dyn Context<P>,
@@ -84,12 +85,7 @@ impl<'a, T: Voxel> Context<T> for VoxelContext<'a, T> {
         }
     }
 
-    fn child<'b>(
-        &'b self,
-        x: isize,
-        y: isize,
-        z: isize,
-    ) -> DetailContext<'b, T> {
+    fn child<'b>(&'b self, x: isize, y: isize, z: isize) -> DetailContext<'b, T> {
         if x >= 0
             && x < T::WIDTH as isize
             && y >= 0
@@ -106,7 +102,11 @@ impl<'a, T: Voxel> Context<T> for VoxelContext<'a, T> {
 }
 
 impl<'a, P: Voxel> DetailContext<'a, P> {
-    pub fn new(parent: &'a dyn Context<P>, coord: [isize; 3], voxel: Option<&'a ChildOf<P>>) -> Self {
+    pub fn new(
+        parent: &'a dyn Context<P>,
+        coord: [isize; 3],
+        voxel: Option<&'a ChildOf<P>>,
+    ) -> Self {
         Self {
             parent,
             coord,
@@ -236,7 +236,7 @@ impl<'a, V, S> Clone for WorldContext<'a, V, S>
 where
     V: Data,
     S: 'a + GenericReadStorage<Component = DynamicVoxelMesh<V>>,
-     {
+{
     fn clone(&self) -> Self {
         Self {
             coord: self.coord,

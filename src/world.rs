@@ -1,6 +1,4 @@
-use crate::material::Atlas;
-use crate::mesh::*;
-use crate::voxel::*;
+use crate::{material::Atlas, mesh::*, voxel::*};
 
 use amethyst::{
     assets::Handle,
@@ -16,14 +14,17 @@ use crossbeam::atomic::AtomicCell;
 use nalgebra_glm::*;
 use rayon::ThreadPool;
 
-use std::marker::PhantomData;
-use std::mem::replace;
-use std::ops::{Deref, DerefMut};
-use std::sync::Arc;
+use std::{
+    marker::PhantomData,
+    mem::replace,
+    ops::{Deref, DerefMut},
+    sync::Arc,
+};
 
 /// A dynamically loaded infinite world component.
 /// Voxel data is pulled from a VoxelSource component on the same entity.
-/// The voxel world has a rendering range around the viewpoint of the current camera, which is automatically updated.
+/// The voxel world has a rendering range around the viewpoint of the current
+/// camera, which is automatically updated.
 pub struct VoxelWorld<T: Data> {
     loaded: bool,
     limits: Limits,
@@ -53,15 +54,17 @@ pub trait VoxelSource<'s, T: Data>: Send + Sync {
     type SystemData: SystemData<'s>;
 
     /// Load chunk at the specified chunk coordinate.
-    /// After this the returned FnOnce will be run on a background thread to get the final result.
+    /// After this the returned FnOnce will be run on a background thread to get
+    /// the final result.
     fn load_voxel(
         &mut self,
         system_data: &mut Self::SystemData,
         coord: [isize; 3],
     ) -> VoxelSourceResult<T>;
 
-    /// When a chunk is removed from the `VoxelWorld`, some sources might want to persist the changes made
-    /// to the voxel. When a chunk is removed, this function will be called dispose of the chunk properly.
+    /// When a chunk is removed from the `VoxelWorld`, some sources might want
+    /// to persist the changes made to the voxel. When a chunk is removed,
+    /// this function will be called dispose of the chunk properly.
     fn drop_voxel(
         &mut self,
         _system_data: &mut Self::SystemData,
@@ -72,8 +75,9 @@ pub trait VoxelSource<'s, T: Data>: Send + Sync {
     }
 
     /// Retrieve the limits in chunks that this VoxelSource can generate.
-    /// Chunks that have neighbours according to the limits, but have no neighbours in the `VoxelWorld`
-    /// will not be rendered to ensure that rendering glitches don't occur.
+    /// Chunks that have neighbours according to the limits, but have no
+    /// neighbours in the `VoxelWorld` will not be rendered to ensure that
+    /// rendering glitches don't occur.
     fn limits(&self) -> Limits;
 }
 
@@ -83,8 +87,9 @@ pub struct WorldSystem<T: Data, S: for<'s> VoxelSource<'s, T>> {
 }
 
 /// Chunk coordinates to denote the rendering limits of a `VoxelWorld`.
-/// `None` specifies a non-existing limit, the world will be infinite in that direction.
-/// `Some` specifies an existing inclusive limit, chunk past this limit will not be requested.
+/// `None` specifies a non-existing limit, the world will be infinite in that
+/// direction. `Some` specifies an existing inclusive limit, chunk past this
+/// limit will not be requested.
 #[derive(Clone)]
 pub struct Limits {
     pub from: [Option<isize>; 3],
@@ -98,8 +103,9 @@ pub(crate) enum Chunk<T: Data> {
 }
 
 impl<T: Data> VoxelWorld<T> {
-    /// Create a new `VoxelWorld` component with specified render distance `dims` and a specified chunk `scale`.
-    /// The `VoxelWorld` will still require a `VoxelSource`, that should be added to the entity separately.
+    /// Create a new `VoxelWorld` component with specified render distance
+    /// `dims` and a specified chunk `scale`. The `VoxelWorld` will still
+    /// require a `VoxelSource`, that should be added to the entity separately.
     pub fn new(atlas: Handle<Atlas>, dims: [usize; 3], scale: f32) -> Self {
         Self {
             loaded: false,
@@ -324,7 +330,6 @@ impl<'s, T: Data, S: for<'a> VoxelSource<'a, T> + Component> System<'s> for Worl
                         // process the chunk
                         let moved_chunk = match moved_chunk {
                             Chunk::NotNeeded => {
-                                // todo: *check* if the chunk needs to be loaded
                                 let coord = [x + origin[0], y + origin[1], z + origin[2]];
                                 limit_visibility(
                                     &mut world.visibility,
@@ -358,7 +363,7 @@ impl<'s, T: Data, S: for<'a> VoxelSource<'a, T> + Component> System<'s> for Worl
                                         meshes.insert(entity, mesh).ok();
                                         transforms.insert(entity, transform).ok();
                                         Chunk::Ready(entity)
-                                    }
+                                    },
                                     VoxelSourceResult::Loading(job) => {
                                         let request = Arc::new(AtomicCell::default());
                                         let weak = Arc::downgrade(&request);
@@ -369,13 +374,13 @@ impl<'s, T: Data, S: for<'a> VoxelSource<'a, T> + Component> System<'s> for Worl
                                             }
                                         });
                                         Chunk::NotReady(request)
-                                    }
+                                    },
                                     VoxelSourceResult::Retry => {
                                         world.loaded = false;
                                         Chunk::NotNeeded
-                                    }
+                                    },
                                 }
-                            }
+                            },
                             Chunk::NotReady(request) => {
                                 let coord = [x + origin[0], y + origin[1], z + origin[2]];
                                 limit_visibility(
@@ -410,16 +415,16 @@ impl<'s, T: Data, S: for<'a> VoxelSource<'a, T> + Component> System<'s> for Worl
                                         meshes.insert(entity, mesh).ok();
                                         transforms.insert(entity, transform).ok();
                                         Chunk::Ready(entity)
-                                    }
+                                    },
                                     None => Chunk::NotReady(request),
                                 }
-                            }
+                            },
                             Chunk::Ready(voxel) => Chunk::Ready(voxel),
                         };
 
                         // install the chunk
                         match replace(&mut world.data[index], moved_chunk) {
-                            Chunk::NotReady(_future) => { /* this is a problem */ }
+                            Chunk::NotReady(_future) => { /* this is a problem */ },
                             Chunk::Ready(entity) => {
                                 let coord = [x + origin[0], y + origin[1], z + origin[2]];
                                 let voxel = replace(
@@ -429,7 +434,7 @@ impl<'s, T: Data, S: for<'a> VoxelSource<'a, T> + Component> System<'s> for Worl
                                 entities.delete(entity).expect("Remove chunk entity failed");
                                 let job = source.drop_voxel(&mut source_data, coord, voxel);
                                 self.pool.spawn(move || job());
-                            }
+                            },
                             Chunk::NotNeeded => (),
                         }
                     })
@@ -438,7 +443,6 @@ impl<'s, T: Data, S: for<'a> VoxelSource<'a, T> + Component> System<'s> for Worl
 
             world.origin = origin;
 
-            // todo: find out view range
             world.view_range = world
                 .visibility
                 .iter()

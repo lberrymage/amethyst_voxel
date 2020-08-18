@@ -1,5 +1,4 @@
-use crate::mesh::VoxelMesh;
-use crate::pass::*;
+use crate::{mesh::VoxelMesh, pass::*};
 
 use amethyst::{
     assets::Handle,
@@ -8,8 +7,9 @@ use amethyst::{
     renderer::{
         bundle::{RenderOrder, RenderPlan, RenderPlugin, Target},
         pass::Base3DPassDef,
-        Backend, Factory,
         rendy::graph::render::RenderGroupDesc,
+        Backend,
+        Factory,
     },
 };
 
@@ -48,7 +48,7 @@ where
         _builder: &mut DispatcherBuilder<'a, 'b>,
     ) -> Result<(), Error> {
         world.register::<Handle<VoxelMesh>>();
-        //builder.add(VisibilitySortingSystem::new(), "visibility_system", &[]);
+        // builder.add(VisibilitySortingSystem::new(), "visibility_system", &[]);
         Ok(())
     }
 

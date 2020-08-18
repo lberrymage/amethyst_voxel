@@ -14,22 +14,20 @@ use amethyst::{
 };
 use core::num::NonZeroU8;
 use serde_derive::*;
-use std::borrow::Cow;
-use std::collections::HashMap;
-use std::iter::repeat;
-use std::ops::Deref;
-use std::sync::Arc;
+use std::{borrow::Cow, collections::HashMap, iter::repeat, ops::Deref, sync::Arc};
 
 /// A material. For a better explanation of the properties,
 /// take a look at the amethyst PBR model.
 pub trait VoxelMaterial: 'static + Send + Sync {
     /// The width and height of this material.
     fn dimension(&self) -> usize;
-    /// Get a pixel value for the albedo/alpha channel. The format is [r, g, b, a].
+    /// Get a pixel value for the albedo/alpha channel. The format is [r, g, b,
+    /// a].
     fn albedo_alpha(&self, x: usize, y: usize) -> [u8; 4];
     /// Get a pixel value for the emission channel. The format is [r, g, b].
     fn emission(&self, x: usize, y: usize) -> [u8; 3];
-    /// Get a pixel value for the metallic/roughness channel. The format is [m, r].
+    /// Get a pixel value for the metallic/roughness channel. The format is [m,
+    /// r].
     fn metallic_roughness(&self, x: usize, y: usize) -> [u8; 2];
     /// The submaterials of this material. Should be at least self.
     fn submaterials(&self) -> Vec<Box<dyn VoxelMaterial>>;
@@ -86,7 +84,8 @@ pub struct AtlasProcessorData<'a> {
     strategy: Option<Read<'a, HotReloadStrategy>>,
 }
 
-/// The tiling of the the textured material. This is only relevant when filtering is enabled.
+/// The tiling of the the textured material. This is only relevant when
+/// filtering is enabled.
 #[derive(Deserialize, Clone, Copy)]
 pub enum Tiling {
     None,
@@ -111,18 +110,23 @@ pub struct ColoredMaterial {
 
 #[derive(Clone)]
 pub struct TexturedMaterial {
-    /// The size of both the width and the height of this texture. Must be a power of 2.
+    /// The size of both the width and the height of this texture. Must be a
+    /// power of 2.
     pub size: usize,
-    /// The tiling of the the textured material. This is only relevant when filtering is enabled.
+    /// The tiling of the the textured material. This is only relevant when
+    /// filtering is enabled.
     pub tiling: Tiling,
     /// The albedo/alpha texture. One entry [r, g, b, a] per pixel.
-    /// If you don't care abou this texture you can leave it empty, [0, 0, 0, 255] will be used i f the vector is empty.
+    /// If you don't care abou this texture you can leave it empty, [0, 0, 0,
+    /// 255] will be used i f the vector is empty.
     pub albedo_alpha: Arc<[[u8; 4]]>,
     /// The emission texture. One entry [r, g, b] per pixel.
-    /// If you don't care about this texture you can leave it empty, [0, 0, 0] will be used if the vector is empty.
+    /// If you don't care about this texture you can leave it empty, [0, 0, 0]
+    /// will be used if the vector is empty.
     pub emission: Arc<[[u8; 3]]>,
     /// The metallic/roughness texture. One entry [m, r] per pixel.
-    /// If you don't care abou this texture you can leave it empty, [240, 8] will be used i f the vector is empty.
+    /// If you don't care abou this texture you can leave it empty, [240, 8]
+    /// will be used i f the vector is empty.
     pub metallic_roughness: Arc<[[u8; 2]]>,
 }
 
@@ -164,8 +168,8 @@ impl Asset for Atlas {
 }
 
 impl AtlasData {
-    /// Create a new material with a id if a material with the given id doesn't exist already.
-    /// Returns the material handle for the given id.
+    /// Create a new material with a id if a material with the given id doesn't
+    /// exist already. Returns the material handle for the given id.
     pub fn create<T: AsRef<dyn VoxelMaterial>, S: Into<String>>(
         &mut self,
         id: S,
@@ -195,8 +199,9 @@ impl AtlasData {
             .clone()
     }
 
-    /// Create a material without assigning an id to it. This means the material can't be looked up at a later point.
-    /// The returned handle is the only way to refer to the created material.
+    /// Create a material without assigning an id to it. This means the material
+    /// can't be looked up at a later point. The returned handle is the only
+    /// way to refer to the created material.
     pub fn create_without_id<T: AsRef<dyn VoxelMaterial>>(
         &mut self,
         material: T,
@@ -436,11 +441,13 @@ fn build_material(
             .get((y as usize / grid) * slots + x as usize / grid)
             .map(|m| {
                 let border = (grid - m.dimension()) / 2;
-                let border = |x, tile| match (x < border, tile) {
-                    (true, true) => ((x + m.dimension()) - border) % m.dimension(),
-                    (true, false) => 0,
-                    (false, true) => (x - border) % m.dimension(),
-                    (false, false) => (m.dimension() - 1).min(x - border),
+                let border = |x, tile| {
+                    match (x < border, tile) {
+                        (true, true) => ((x + m.dimension()) - border) % m.dimension(),
+                        (true, false) => 0,
+                        (false, true) => (x - border) % m.dimension(),
+                        (false, false) => (m.dimension() - 1).min(x - border),
+                    }
                 };
                 let t = m.tiling();
                 (

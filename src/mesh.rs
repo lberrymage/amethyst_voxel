@@ -10,18 +10,22 @@ use amethyst::{
 
 use nalgebra_glm::*;
 
-use crate::ambient_occlusion::*;
-use crate::context::*;
-use crate::material::*;
-use crate::model::*;
-use crate::triangulate::Triangulation;
-use crate::voxel::{Data, NestedVoxel, Voxel};
-use crate::world::VoxelWorld;
+use crate::{
+    ambient_occlusion::*,
+    context::*,
+    material::*,
+    model::*,
+    triangulate::Triangulation,
+    voxel::{Data, NestedVoxel, Voxel},
+    world::VoxelWorld,
+};
 
-use std::collections::HashMap;
-use std::marker::PhantomData;
-use std::ops::{Deref, DerefMut};
-use std::sync::Arc;
+use std::{
+    collections::HashMap,
+    marker::PhantomData,
+    ops::{Deref, DerefMut},
+    sync::Arc,
+};
 
 /// Asset for voxelmesh rendering
 pub struct VoxelMesh {
@@ -108,7 +112,8 @@ impl<T: Data> DynamicVoxelMesh<T> {
         }
     }
 
-    /// Create a new `VoxelRender` component with a new `Voxel<T>` created from an iterator.
+    /// Create a new `VoxelRender` component with a new `Voxel<T>` created from
+    /// an iterator.
     pub fn from_iter<I>(data: T, atlas: Handle<Atlas>, iter: I) -> Self
     where
         I: IntoIterator<Item = T::Child>,

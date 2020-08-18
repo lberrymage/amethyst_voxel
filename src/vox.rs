@@ -4,8 +4,7 @@ use crate::{
 };
 use amethyst::assets::Format;
 use byteorder::*;
-use std::io::*;
-use std::sync::Arc;
+use std::{io::*, sync::Arc};
 
 type E = LittleEndian;
 
@@ -190,10 +189,14 @@ where
                 SubModelData::new(
                     voxels
                         .into_iter()
-                        .map(|(x, y, z, i)| Instance {
-                            index: x as usize + y as usize * size.0 + z as usize * size.0 * size.1,
-                            material: i as usize,
-                            bone: mesh_index,
+                        .map(|(x, y, z, i)| {
+                            Instance {
+                                index: x as usize
+                                    + y as usize * size.0
+                                    + z as usize * size.0 * size.1,
+                                material: i as usize,
+                                bone: mesh_index,
+                            }
                         })
                         .collect(),
                     [size.0, size.1, size.2],
@@ -224,9 +227,9 @@ fn bit(field: u32, bit: u32) -> bool {
 
 // convert a simple r,g,b,a material to a VoxelMaterial
 fn rgba_to_material(r: u8, g: u8, b: u8, a: u8) -> ColoredMaterial {
-    //let r = ((r as f32 / 255.0).powf(2.2 / 1.0) * 255.0) as u8;
-    //let g = ((g as f32 / 255.0).powf(2.2 / 1.0) * 255.0) as u8;
-    //let b = ((b as f32 / 255.0).powf(2.2 / 1.0) * 255.0) as u8;
+    // let r = ((r as f32 / 255.0).powf(2.2 / 1.0) * 255.0) as u8;
+    // let g = ((g as f32 / 255.0).powf(2.2 / 1.0) * 255.0) as u8;
+    // let b = ((b as f32 / 255.0).powf(2.2 / 1.0) * 255.0) as u8;
 
     ColoredMaterial {
         albedo: [r, g, b],

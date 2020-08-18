@@ -62,6 +62,10 @@ impl SubModelData {
     ///         the material references to an index in the materials slice.
     /// dimensions: the three dimensional size of the model.
     pub fn new(voxels: Vec<Instance>, dimensions: [usize; 3]) -> Self {
-        Self { voxels, dimensions, offset: Mat4x4::identity() }
+        Self {
+            voxels,
+            dimensions,
+            offset: Mat4x4::identity(),
+        }
     }
 }
