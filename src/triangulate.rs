@@ -67,8 +67,8 @@ impl Triangulation {
         root.triangulate::<Back, C>(self, ao, context, origin, scale);
         root.triangulate::<Front, C>(self, ao, context, origin, scale);
         for i in start..self.pos.len() {
-            let pos: [f32; 3] = self.pos[i].0.into();
-            let nml: [f32; 3] = self.nml[i].0.into();
+            let pos: [f32; 3] = self.pos[i].0;
+            let nml: [f32; 3] = self.nml[i].0;
             let tan: [f32; 3] = [self.tan[i].0[0], self.tan[i].0[1], self.tan[i].0[2]];
             self.pos[i] = transform.transform_point(&pos.into()).coords.into();
             self.nml[i] = transform.transform_vector(&nml.into()).into();
